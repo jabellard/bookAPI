@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.models import User
 from .models import Book
 from .models import Author
 from .models import Publisher
@@ -14,7 +15,13 @@ class BookSerializer(serializers.ModelSerializer):
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
-        fields = '__all__'
+        fields = ('id', 'first_name', 'last_name', 'books')
+
+
+class AuthorBookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = ('books',)
 
 
 class PublisherSerializer(serializers.ModelSerializer):
@@ -27,3 +34,8 @@ class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
         fields = '__all__'
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'password',)
