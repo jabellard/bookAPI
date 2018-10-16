@@ -13,6 +13,9 @@ class Author(models.Model):
     def __str__(self):
         return self.first_name + ' ' + self.last_name
 
+    def __unicode__(self):
+        return '%s %s' % (self.first_name, self.last_name)
+
 
 class Publisher(models.Model):
     name = models.CharField(max_length=30)
@@ -22,6 +25,9 @@ class Publisher(models.Model):
     def __str__(self):
         return self.name
 
+    def __unicode__(self):
+        return '%s' % (self.name)
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=30)
@@ -30,6 +36,9 @@ class Genre(models.Model):
 
     def __str__(self):
         return self.name
+
+    def __unicode__(self):
+        return '%s' % (self.name)
 
 
 class Book(models.Model):
@@ -45,3 +54,6 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
+    def __unicode__(self):
+        return '%s' % (self.title)

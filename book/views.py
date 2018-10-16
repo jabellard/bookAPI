@@ -1,7 +1,5 @@
 from django.shortcuts import render
 from rest_framework import generics
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework import permissions
 from .models import Book
 from .models import Author
 from .models import Publisher
@@ -11,58 +9,79 @@ from .serializers import BookSerializer
 from .serializers import AuthorSerializer
 from .serializers import AuthorBookSerializer
 from .serializers import PublisherSerializer
+from .serializers import PublisherBookSerializer
 from .serializers import GenreSerializer
+from .serializers import GenreBookSerializer
 from .serializers import UserSerializer
+from .serializers import UserBookSerializer
 
 # Create your views here.
 
 
-class BookListCreateAPIView(generics.ListCreateAPIView):
+class BookList(generics.ListCreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
 
-class BookRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+class BookDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
 
-class AuthorListCreateAPIView(generics.ListCreateAPIView):
+class AuthorList(generics.ListCreateAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
 
 
-class AuthorRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+class AuthorDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
 
 
-class AuthorBookListAPIView(generics.RetrieveAPIView):
+class AuthorBookList(generics.RetrieveAPIView):
     queryset = Author.objects.all()
     serializer_class = AuthorBookSerializer
 
 
-class PublisherListCreateAPIView(generics.ListCreateAPIView):
+class PublisherList(generics.ListCreateAPIView):
     queryset = Publisher.objects.all()
     serializer_class = PublisherSerializer
 
 
-class PublisherRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+class PublisherDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Publisher.objects.all()
     serializer_class = PublisherSerializer
 
-
-class GenreListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-    authentication_classes = (BasicAuthentication,)
-    #permission_classes = (permissions.IsAuthenticated,)
+class PublisherBookList(generics.RetrieveAPIView):
+    queryset = Publisher.objects.all()
+    serializer_class = PublisherBookSerializer
 
 
-class GenreRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+class GenreList(generics.ListCreateAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
 
-class UserListCreateAPIView(generics.ListCreateAPIView):
+
+class GenreDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+
+
+class GenreBookList(generics.RetrieveAPIView):
+    queryset = Genre.objects.all()
+    serializer_class = GenreBookSerializer
+
+
+class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UserBookList(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserBookSerializer

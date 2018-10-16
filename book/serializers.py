@@ -7,35 +7,63 @@ from .models import Genre
 
 
 class BookSerializer(serializers.ModelSerializer):
+    authors = serializers.StringRelatedField(many=True)
+    genre = serializers.StringRelatedField()
+    publisher = serializers.StringRelatedField()
+    owner = serializers.SlugRelatedField(slug_field='username', read_only=True)
     class Meta:
         model = Book
         fields = '__all__'
 
 
 class AuthorSerializer(serializers.ModelSerializer):
+    owner = serializers.SlugRelatedField(slug_field='username', read_only=True)
     class Meta:
         model = Author
-        fields = ('id', 'first_name', 'last_name', 'books')
+        fields = '__all__'
 
 
 class AuthorBookSerializer(serializers.ModelSerializer):
+    books = serializers.StringRelatedField(many=True)
     class Meta:
         model = Author
         fields = ('books',)
 
 
 class PublisherSerializer(serializers.ModelSerializer):
+    owner = serializers.SlugRelatedField(slug_field='username', read_only=True)
     class Meta:
         model = Publisher
         fields = '__all__'
 
+class PublisherBookSerializer(serializers.ModelSerializer):
+    books = serializers.StringRelatedField(many=True)
+    class Meta:
+        model = Publisher
+        fields = ('books',)
+
 
 class GenreSerializer(serializers.ModelSerializer):
+    owner = serializers.SlugRelatedField(slug_field='username', read_only=True)
     class Meta:
         model = Genre
         fields = '__all__'
+
+class GenreBookSerializer(serializers.ModelSerializer):
+    books = serializers.StringRelatedField(many=True)
+    class Meta:
+        model = Genre
+        fields = ('books',)
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'password',)
+
+
+class UserBookSerializer(serializers.ModelSerializer):
+    books = serializers.StringRelatedField(many=True)
+    class Meta:
+        model = User
+        fields = ('books',)
