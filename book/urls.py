@@ -15,6 +15,10 @@ from .views import GenreBookList
 from .views import UserList
 from .views import UserDetail
 from .views import UserBookList
+from .views import UserPublisherList
+from .views import UserAuthorList
+from .views import UserGenreList
+from .views import Register
 
 
 urlpatterns = [
@@ -32,4 +36,8 @@ urlpatterns = [
     url(r'^users/$', UserList.as_view()),
     url(r'^users/(?P<pk>\d+)/$', UserDetail.as_view()),
     url(r'^users/(?P<pk>\d+)/books$', UserBookList.as_view()),
+    url(r'^users/(?P<pk>\d+)/publishers$', UserPublisherList.as_view()),
+    url(r'^users/(?P<pk>\d+)/authors$', UserAuthorList.as_view()),
+    url(r'^users/(?P<pk>\d+)/genres$', UserGenreList.as_view()),
+    url(r'^register/$', Register.as_view()),
 ]

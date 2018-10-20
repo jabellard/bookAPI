@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics
+from rest_framework import permissions
 from .models import Book
 from .models import Author
 from .models import Publisher
@@ -14,6 +15,9 @@ from .serializers import GenreSerializer
 from .serializers import GenreBookSerializer
 from .serializers import UserSerializer
 from .serializers import UserBookSerializer
+from .serializers import UserPublisherSerializer
+from .serializers import UserAuthorSerializer
+from .serializers import UserGenreSerializer
 
 # Create your views here.
 
@@ -52,6 +56,7 @@ class PublisherDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Publisher.objects.all()
     serializer_class = PublisherSerializer
 
+
 class PublisherBookList(generics.RetrieveAPIView):
     queryset = Publisher.objects.all()
     serializer_class = PublisherBookSerializer
@@ -80,8 +85,30 @@ class UserList(generics.ListCreateAPIView):
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    #permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class UserBookList(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserBookSerializer
+
+
+class UserPublisherList(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserPublisherSerializer
+
+
+class UserAuthorList(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserAuthorSerializer
+
+
+class UserGenreList(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserGenreSerializer
+
+
+class Register(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (permissions.AllowAny,)
