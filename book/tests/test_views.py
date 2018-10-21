@@ -165,6 +165,108 @@ class BookDetailTest(TestSetUP):
         res=self.client.get(url)
         self.assertEqual(res.status_code, 404)
 
+    def put_book(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            data = {
+                'title': 'new title',
+                'description': 'new description'
+            },
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 200)
+
+    def put_book_bad_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            data = {
+                'title': 'new title',
+                'description': 'new description'
+            },
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 401)
+
+    def put_book_no_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            data = {
+                'title': 'new title',
+                'description': 'new description'
+            }
+        )
+        self.assertEqual(res.status_code, 401)
+
+    def delete_book(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.delete(
+            url,
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 200)
+
+    def delete_book_bad_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 401)
+
+    def delete_book_no_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url
+        )
+        self.assertEqual(res.status_code, 401)
 
 class AuthorListTest(TestSetUP):
     view='author_list'
+
+class AuthorDetailTest(TestSetUP):
+    view = 'author_detail'
+
+class AuthorBookList(TestSetUP):
+    view = 'author_book_list'
+
+class PublisherList(TestSetUP):
+    view = 'publisher_list'
+
+class PublisherDetail(TestSetUP):
+    view = 'publisher_detail'
+
+class PublisherBookList(TestSetUP):
+    view = 'publisher_book_list'
+
+class GenreList(TestSetUP):
+    view = 'genre_list'
+
+class GenreDetail(TestSetUP):
+    view = 'genre_detail'
+
+class GenreBookList(TestSetUP):
+    view = 'genre_book_list'
+
+class UserList(TestSetUP):
+    view = 'user_list'
+
+class UserDetail(TestSetUP):
+    view = 'user_detail'
+
+class UserBookList(TestSetUP):
+    view = 'user_book_list'
+
+class UserPublisherList(TestSetUP):
+    view = 'user_publisher_list'
+
+class UserAuthorList(TestSetUP):
+    view = 'user_author_list'
+
+class UserGenreList(TestSetUP):
+    view = 'user_genre_list'
+
+class Register(TestSetUP):
+    view = 'register'
