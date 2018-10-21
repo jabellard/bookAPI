@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 class Author(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    email = models.EmailField(max_length=100)
+    email = models.EmailField(max_length=100, null=True, blank=True)
     owner = models.ForeignKey(User, related_name='authors', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -20,7 +20,6 @@ class Author(models.Model):
 class Publisher(models.Model):
     name = models.CharField(max_length=30)
     owner = models.ForeignKey(User, related_name='publishers', on_delete=models.CASCADE, null=True)
-
 
     def __str__(self):
         return self.name
@@ -43,13 +42,13 @@ class Genre(models.Model):
 
 class Book(models.Model):
     title = models.CharField(max_length=30)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     authors = models.ManyToManyField(Author, related_name='books', null=True, blank=True)
     genre = models.ForeignKey(Genre, related_name='books', null=True,
                               blank=True, on_delete=models.SET_NULL)
     publisher = models.ForeignKey(Publisher, related_name='books',
                                   null=True, blank=True, on_delete=models.SET_NULL)
-    date_published = models.DateField()
+    date_published = models.DateField(null=True, blank=True)
     owner = models.ForeignKey(User, related_name='books', on_delete=models.CASCADE, null=True)
 
     def __str__(self):
