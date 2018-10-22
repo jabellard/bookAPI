@@ -13,15 +13,15 @@ class Test1(TestCase):
     def setUP(self):
         print('setting up')
 
-    def get_authors(self):
+    def test_get_authors(self):
         print('getting authors...')
         response = self.client.get(reverse('author_list'))
         self.assertEqual(response.status_code, 200)
 
-    def get_publisers(self):
+    def test_get_publisers(self):
         print('getting publishers')
         response = self.client.get(reverse('publisher_list'))
-        self.assertEqual(response.status_code, 2900)
+        self.assertEqual(response.status_code, 200)
 
 
 class TestSetUP(TestCase):
@@ -29,7 +29,7 @@ class TestSetUP(TestCase):
 
     def basic_auth_header(username, password):
         auth_header = {
-            'HTTP_AUTHORIZATION': 'Basic' + '')
+            'HTTP_AUTHORIZATION': 'Basic' + ''
         }
         return auth_header
 
@@ -55,9 +55,9 @@ class TestSetUP(TestCase):
             else:
                 user = user1
             author = Author.objects.create(
-                first_name = 'authorf' + str(i),
-                last_name = 'authorl' + str(i),
-                owner = user
+                first_name='authorf' + str(i),
+                last_name='authorl' + str(i),
+                owner=user
             )
             author.save()
 
@@ -108,17 +108,17 @@ class TestSetUP(TestCase):
 class BookListTest(TestSetUP):
     view = 'book_list'
 
-    def get_books(self):
+    def test_get_books(self):
         url = reverse(self.view)
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
 
-    def post_book(self):
+    def test_post_book(self):
         url = reverse(self.view)
 
         res = self.client.post(
             url,
-            data = {
+            data={
                 'title': 'uploaded book',
                 'description': 'uploaded book description'
             },
@@ -126,12 +126,12 @@ class BookListTest(TestSetUP):
         )
         self.assertEqual(res.status_code, 200)
 
-    def post_book_bad_auth(self):
+    def test_post_book_bad_auth(self):
         url = reverse(self.view)
 
         res = self.client.post(
             url,
-            data = {
+            data={
                 'title': 'uploaded book',
                 'description': 'uploaded book description'
             },
@@ -139,37 +139,37 @@ class BookListTest(TestSetUP):
         )
         self.assertEqual(res.status_code, 401)
 
-
-    def post_book_no_auth(self):
+    def test_post_book_no_auth(self):
         url = reverse(self.view)
 
         res = self.client.post(
             url,
-            data = {
+            data={
                 'title': 'uploaded book',
                 'description': 'uploaded book description'
             }
         )
         self.assertEqual(res.status_code, 401)
+
 
 class BookDetailTest(TestSetUP):
-    view='book_detail'
+    view = 'book_detail'
 
-    def get_book(self):
-        url=reverse(self.view, kwargs = {'pk': 1})
-        res=self.client.get(url)
+    def test_get_book(self):
+        url = reverse(self.view, kwargs={'pk': 1})
+        res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
 
-    def get_nonexistent_book(self):
-        url=reverse(self.view, kwargs = {'pk': 88888})
-        res=self.client.get(url)
+    def test_get_nonexistent_book(self):
+        url = reverse(self.view, kwargs={'pk': 88888})
+        res = self.client.get(url)
         self.assertEqual(res.status_code, 404)
 
-    def put_book(self):
-        url = reverse(self.view, kwargs = {'pk': 1})
+    def test_put_book(self):
+        url = reverse(self.view, kwargs={'pk': 1})
         res = self.client.put(
             url,
-            data = {
+            data={
                 'title': 'new title',
                 'description': 'new description'
             },
@@ -177,11 +177,11 @@ class BookDetailTest(TestSetUP):
         )
         self.assertEqual(res.status_code, 200)
 
-    def put_book_bad_auth(self):
-        url = reverse(self.view, kwargs = {'pk': 1})
+    def test_put_book_bad_auth(self):
+        url = reverse(self.view, kwargs={'pk': 1})
         res = self.client.put(
             url,
-            data = {
+            data={
                 'title': 'new title',
                 'description': 'new description'
             },
@@ -189,18 +189,263 @@ class BookDetailTest(TestSetUP):
         )
         self.assertEqual(res.status_code, 401)
 
-    def put_book_no_auth(self):
-        url = reverse(self.view, kwargs = {'pk': 1})
+    def test_put_book_no_auth(self):
+        url = reverse(self.view, kwargs={'pk': 1})
         res = self.client.put(
             url,
-            data = {
+            data={
                 'title': 'new title',
                 'description': 'new description'
             }
         )
         self.assertEqual(res.status_code, 401)
 
-    def delete_book(self):
+    def test_delete_book(self):
+        url = reverse(self.view, kwargs={'pk': 1})
+        res = self.client.delete(
+            url,
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 200)
+
+    def test_delete_book_bad_auth(self):
+        url = reverse(self.view, kwargs={'pk': 1})
+        res = self.client.put(
+            url,
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 401)
+
+    def test_delete_book_no_auth(self):
+        url = reverse(self.view, kwargs={'pk': 1})
+        res = self.client.put(
+            url
+        )
+        self.assertEqual(res.status_code, 401)
+
+
+class AuthorListTest(TestSetUP):
+    view = 'author_list'
+
+    def test_get_authors(self):
+        url = reverse(self.view)
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+    def test_post_author(self):
+        url = reverse(self.view)
+
+        res = self.client.post(
+            url,
+            data={
+                'first_name': 'first',
+                'last_name': 'last'
+            },
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 200)
+
+    def test_post_author_bad_auth(self):
+        url = reverse(self.view)
+
+        res = self.client.post(
+            url,
+            data={
+                'first_name': 'first',
+                'last_name': 'last'
+            },
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 401)
+
+    def test_post_book_no_auth(self):
+        url = reverse(self.view)
+
+        res = self.client.post(
+            url,
+            data={
+                'first_name': 'first',
+                'last_name': 'last'
+            }
+        )
+        self.assertEqual(res.status_code, 401)
+
+
+class AuthorDetailTest(TestSetUP):
+    view = 'author_detail'
+
+    def test_get_author(self):
+        url = reverse(self.view, kwargs={'pk': 1})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+    def test_get_nonexistent_author(self):
+        url = reverse(self.view, kwargs={'pk': 88888})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 404)
+
+    def test_put_author(self):
+        url = reverse(self.view, kwargs={'pk': 1})
+        res = self.client.put(
+            url,
+            data={
+                'first_name': 'new first name',
+                'last_name': 'new last name'
+            },
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 200)
+
+    def test_put_author_bad_auth(self):
+        url = reverse(self.view, kwargs={'pk': 1})
+        res = self.client.put(
+            url,
+            data={
+                'first_name': 'new first name',
+                'last_name': 'new last name'
+            },
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 401)
+
+    def test_put_author_no_auth(self):
+        url = reverse(self.view, kwargs={'pk': 1})
+        res = self.client.put(
+            url,
+            data={
+                'first_name': 'new first name',
+                'last_name': 'new last name'
+            }
+        )
+        self.assertEqual(res.status_code, 401)
+
+    def test_delete_author(self):
+        url = reverse(self.view, kwargs={'pk': 1})
+        res = self.client.delete(
+            url,
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 200)
+
+    def test_delete_author_bad_auth(self):
+        url = reverse(self.view, kwargs={'pk': 1})
+        res = self.client.put(
+            url,
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 401)
+
+    def test_delete_author_no_auth(self):
+        url = reverse(self.view, kwargs={'pk': 1})
+        res = self.client.put(
+            url
+        )
+        self.assertEqual(res.status_code, 401)
+
+
+class AuthorBookListTest(TestSetUP):
+    view = 'author_book_list'
+
+    def test_get_author_books(self):
+        url = reverse(self.view, kwargs={'pk': 1})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+     def test_get_nonexistent_author_books(self):
+         url=reverse(self.view, kwargs = {'pk': 88888})
+         res=self.client.get(url)
+         self.assertEqual(res.status_code, 404)
+
+class PublisherListTest(TestSetUP):
+    view = 'publisher_list'
+
+    def test_get_publisers(self):
+        url = reverse(self.view)
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+    def test_post_publisher(self):
+        url = reverse(self.view)
+
+        res = self.client.post(
+            url,
+            data = {
+                'name': 'publisher'
+            },
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 200)
+
+    def test_post_publisher_bad_auth(self):
+        url = reverse(self.view)
+
+        res = self.client.post(
+            url,
+            data = {
+                'name': 'publisher'
+            },
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 401)
+
+
+    def test_post_publisher_no_auth(self):
+        url = reverse(self.view)
+
+        res = self.client.post(
+            url,
+            data = {
+                'name': 'publisher'
+            }
+        )
+        self.assertEqual(res.status_code, 401)
+
+class PublisherDetailTest(TestSetUP):
+    view = 'publisher_detail'
+
+    def test_get_publishers(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+    def test_get_nonexistent_publishers(self):
+        url = reverse(self.view, kwargs = {'pk': 88888})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 404)
+
+    def test_put_publisher(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            data = {
+                'name': "pub1"
+            },
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 200)
+
+    def test_put_publisher_bad_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            data = {
+                'name': "pub1"
+            },
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 401)
+
+    def test_put_publisher_no_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            data = {
+                'name': "pub1"
+            }
+        )
+        self.assertEqual(res.status_code, 401)
+
+    def test_delete_publisher(self):
         url = reverse(self.view, kwargs = {'pk': 1})
         res = self.client.delete(
             url,
@@ -208,7 +453,7 @@ class BookDetailTest(TestSetUP):
         )
         self.assertEqual(res.status_code, 200)
 
-    def delete_book_bad_auth(self):
+    def test_delete_publisher_bad_auth(self):
         url = reverse(self.view, kwargs = {'pk': 1})
         res = self.client.put(
             url,
@@ -216,57 +461,289 @@ class BookDetailTest(TestSetUP):
         )
         self.assertEqual(res.status_code, 401)
 
-    def delete_book_no_auth(self):
+    def test_delete_publisher_no_auth(self):
         url = reverse(self.view, kwargs = {'pk': 1})
         res = self.client.put(
             url
         )
         self.assertEqual(res.status_code, 401)
 
-class AuthorListTest(TestSetUP):
-    view='author_list'
-
-class AuthorDetailTest(TestSetUP):
-    view = 'author_detail'
-
-class AuthorBookList(TestSetUP):
-    view = 'author_book_list'
-
-class PublisherList(TestSetUP):
-    view = 'publisher_list'
-
-class PublisherDetail(TestSetUP):
-    view = 'publisher_detail'
-
-class PublisherBookList(TestSetUP):
+class PublisherBookListTest(TestSetUP):
     view = 'publisher_book_list'
 
-class GenreList(TestSetUP):
+    def test_get_publisher_books(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res=self.client.get(url)
+          self.assertEqual(res.status_code, 200)
+
+      def test_get_nonexistent_publisher_books(self):
+          url=reverse(self.view, kwargs = {'pk': 88888})
+          res=self.client.get(url)
+          self.assertEqual(res.status_code, 404)
+
+class GenreListTest(TestSetUP):
     view = 'genre_list'
 
-class GenreDetail(TestSetUP):
+    def test_get_genres(self):
+        url = reverse(self.view)
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+    def test_post_genre(self):
+        url = reverse(self.view)
+
+        res = self.client.post(
+            url,
+            data = {
+                'name': 'test_genre'
+            },
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 200)
+
+    def test_post_genre_bad_auth(self):
+        url = reverse(self.view)
+
+        res = self.client.post(
+            url,
+            data = {
+                'name': 'test_genre'
+            },
+            **self.basic_auth_header('test_username', 'test_password')
+        )
+        self.assertEqual(res.status_code, 401)
+
+
+    def test_post_book_no_auth(self):
+        url = reverse(self.view)
+
+        res = self.client.post(
+            url,
+            data = {
+                'name': 'test_genre'
+            }
+        )
+        self.assertEqual(res.status_code, 401)
+
+class GenreDetailTest(TestSetUP):
     view = 'genre_detail'
 
-class GenreBookList(TestSetUP):
+    def test_get_genre(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.get(url)
+          self.assertEqual(res.status_code, 200)
+
+      def test_get_nonexistent_genre(self):
+          url = reverse(self.view, kwargs = {'pk': 88888})
+          res = self.client.get(url)
+          self.assertEqual(res.status_code, 404)
+
+      def test_put_genre(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.put(
+              url,
+              data = {
+                  'name': "genre1"
+              },
+              **self.basic_auth_header('test_username', 'test_password')
+          )
+          self.assertEqual(res.status_code, 200)
+
+      def test_put_genre_bad_auth(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.put(
+              url,
+              data = {
+                  'name': "genre1"
+              },
+              **self.basic_auth_header('test_username', 'test_password')
+          )
+          self.assertEqual(res.status_code, 401)
+
+      def test_put_genre_no_auth(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.put(
+              url,
+              data = {
+                  'name': "genre1"
+              }
+          )
+          self.assertEqual(res.status_code, 401)
+
+      def test_delete_genre(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.delete(
+              url,
+              **self.basic_auth_header('test_username', 'test_password')
+          )
+          self.assertEqual(res.status_code, 200)
+
+      def test_delete_genre_bad_auth(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.put(
+              url,
+              **self.basic_auth_header('test_username', 'test_password')
+          )
+          self.assertEqual(res.status_code, 401)
+
+      def test_delete_genre_no_auth(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.put(
+              url
+          )
+          self.assertEqual(res.status_code, 401)
+
+class GenreBookListTest(TestSetUP):
     view = 'genre_book_list'
 
-class UserList(TestSetUP):
+    def test_get_genre_books(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res=self.client.get(url)
+          self.assertEqual(res.status_code, 200)
+
+      def test_get_nonexistent_genre_books(self):
+          url=reverse(self.view, kwargs = {'pk': 88888})
+          res=self.client.get(url)
+          self.assertEqual(res.status_code, 404)
+
+class UserListTest(TestSetUP):
     view = 'user_list'
 
-class UserDetail(TestSetUP):
+    def test_get_users(self):
+        url = reverse(self.view)
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+class UserDetailTest(TestSetUP):
     view = 'user_detail'
 
-class UserBookList(TestSetUP):
+    def test_get_user(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.get(url)
+          self.assertEqual(res.status_code, 200)
+
+      def test_get_nonexistent_user(self):
+          url = reverse(self.view, kwargs = {'pk': 88888})
+          res = self.client.get(url)
+          self.assertEqual(res.status_code, 404)
+
+      def test_put_user(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.put(
+              url,
+              data = {
+                  'password': 'newpassword'
+              },
+              **self.basic_auth_header('test_username', 'test_password')
+          )
+          self.assertEqual(res.status_code, 200)
+
+      def test_put_user_bad_auth(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.put(
+              url,
+              data = {
+                  'password': 'newpassword'
+              },
+              **self.basic_auth_header('test_username', 'test_password')
+          )
+          self.assertEqual(res.status_code, 401)
+
+      def test_put_user_no_auth(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.put(
+              url,
+              data = {
+                  'password': 'newpassword'
+              }
+          )
+          self.assertEqual(res.status_code, 401)
+
+      def test_delete_user(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.delete(
+              url,
+              **self.basic_auth_header('test_username', 'test_password')
+          )
+          self.assertEqual(res.status_code, 200)
+
+      def test_delete_user_bad_auth(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.put(
+              url,
+              **self.basic_auth_header('test_username', 'test_password')
+          )
+          self.assertEqual(res.status_code, 401)
+
+      def test_delete_user_no_auth(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res = self.client.put(
+              url
+          )
+          self.assertEqual(res.status_code, 401)
+
+class UserBookListTest(TestSetUP):
     view = 'user_book_list'
 
-class UserPublisherList(TestSetUP):
+    def test_get_user_books(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res=self.client.get(url)
+          self.assertEqual(res.status_code, 200)
+
+      def test_get_nonexistent_user_books(self):
+          url=reverse(self.view, kwargs = {'pk': 88888})
+          res=self.client.get(url)
+          self.assertEqual(res.status_code, 404)
+
+class UserPublisherListTest(TestSetUP):
     view = 'user_publisher_list'
 
-class UserAuthorList(TestSetUP):
+    def test_get_user_publishers(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res=self.client.get(url)
+          self.assertEqual(res.status_code, 200)
+
+      def test_get_nonexistent_user_publishers(self):
+          url=reverse(self.view, kwargs = {'pk': 88888})
+          res=self.client.get(url)
+          self.assertEqual(res.status_code, 404)
+
+class UserAuthorListTest(TestSetUP):
     view = 'user_author_list'
 
-class UserGenreList(TestSetUP):
+    def test_get_user_authors(self):
+          url = reverse(self.view, kwargs = {'pk': 1})
+          res=self.client.get(url)
+          self.assertEqual(res.status_code, 200)
+
+      def test_get_nonexistent_user_authors(self):
+          url=reverse(self.view, kwargs = {'pk': 88888})
+          res=self.client.get(url)
+          self.assertEqual(res.status_code, 404)
+
+class UserGenreListTest(TestSetUP):
     view = 'user_genre_list'
 
-class Register(TestSetUP):
+    def test_get_user_genres(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+          res=self.client.get(url)
+          self.assertEqual(res.status_code, 200)
+
+      def test_get_nonexistent_user_genres(self):
+          url=reverse(self.view, kwargs = {'pk': 88888})
+          res=self.client.get(url)
+          self.assertEqual(res.status_code, 404)
+
+class RegisterTest(TestSetUP):
     view = 'register'
+
+    def test_post_user(self):
+        url = reverse(self.view)
+        res = self.client.post(
+            url,
+            data = {
+                'username': 'test_usernamehghjjhjh',
+                'password': 'lasthjhhh'
+            }
+        )
+        self.assertEqual(res.status_code, 200)
