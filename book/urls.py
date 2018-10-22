@@ -1,4 +1,5 @@
 from django.contrib import admin
+from rest_framework.documentation import include_docs_urls
 from django.conf.urls import url
 from django.urls import path
 from .views import BookList
@@ -40,4 +41,9 @@ urlpatterns = [
     url(r'^users/(?P<pk>\d+)/authors$', UserAuthorList.as_view(), name='user_author_list'),
     url(r'^users/(?P<pk>\d+)/genres$', UserGenreList.as_view(), name='user_genre_list'),
     url(r'^register/$', Register.as_view(), name='register'),
+    url(r'^docs/', include_docs_urls(
+        title='Book API',
+        description='Book API.',
+        public=False
+        )),
 ]
