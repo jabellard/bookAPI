@@ -23,15 +23,16 @@ class Test1(TestCase):
         response = self.client.get(reverse('publisher_list'))
         self.assertEqual(response.status_code, 200)
 
+def basic_auth_header(username, password):
+    credentials = username + ':' + password
+    encoded_credentials = base64.b64encode(bytes(credentials, 'ascii'))
+    auth_header = {
+        'HTTP_AUTHORIZATION': 'Basic ' + encoded_credentials.decode()
+    }
+    return auth_header
 
 class TestSetUP(TestCase):
     view = None
-
-    def basic_auth_header(username, password):
-        auth_header = {
-            'HTTP_AUTHORIZATION': 'Basic' + ''
-        }
-        return auth_header
 
     def setUp(self):
         # create regular users
@@ -104,7 +105,6 @@ class TestSetUP(TestCase):
             book.authors.set([author, ])
             book.save()
 
-
 class BookListTest(TestSetUP):
     view = 'book_list'
 
@@ -122,7 +122,29 @@ class BookListTest(TestSetUP):
                 'title': 'uploaded book',
                 'description': 'uploaded book description'
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('ruser1', '1234ab12')
+        )
+        self.assertEqual(res.status_code, 201)
+
+"""
+class BookListTest(TestSetUP):
+    view = 'book_list'
+
+    def test_get_books(self):
+        url = reverse(self.view)
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 200)
+
+    def test_post_book(self):
+        url = reverse(self.view)
+
+        res = self.client.post(
+            url,
+            data={
+                'title': 'uploaded book',
+                'description': 'uploaded book description'
+            },
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 200)
 
@@ -135,7 +157,7 @@ class BookListTest(TestSetUP):
                 'title': 'uploaded book',
                 'description': 'uploaded book description'
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -173,7 +195,7 @@ class BookDetailTest(TestSetUP):
                 'title': 'new title',
                 'description': 'new description'
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 200)
 
@@ -185,7 +207,7 @@ class BookDetailTest(TestSetUP):
                 'title': 'new title',
                 'description': 'new description'
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -204,7 +226,7 @@ class BookDetailTest(TestSetUP):
         url = reverse(self.view, kwargs={'pk': 1})
         res = self.client.delete(
             url,
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 200)
 
@@ -212,7 +234,7 @@ class BookDetailTest(TestSetUP):
         url = reverse(self.view, kwargs={'pk': 1})
         res = self.client.put(
             url,
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -241,7 +263,7 @@ class AuthorListTest(TestSetUP):
                 'first_name': 'first',
                 'last_name': 'last'
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 200)
 
@@ -254,7 +276,7 @@ class AuthorListTest(TestSetUP):
                 'first_name': 'first',
                 'last_name': 'last'
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -292,7 +314,7 @@ class AuthorDetailTest(TestSetUP):
                 'first_name': 'new first name',
                 'last_name': 'new last name'
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 200)
 
@@ -304,7 +326,7 @@ class AuthorDetailTest(TestSetUP):
                 'first_name': 'new first name',
                 'last_name': 'new last name'
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -323,7 +345,7 @@ class AuthorDetailTest(TestSetUP):
         url = reverse(self.view, kwargs={'pk': 1})
         res = self.client.delete(
             url,
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 200)
 
@@ -331,7 +353,7 @@ class AuthorDetailTest(TestSetUP):
         url = reverse(self.view, kwargs={'pk': 1})
         res = self.client.put(
             url,
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -372,7 +394,7 @@ class PublisherListTest(TestSetUP):
             data = {
                 'name': 'publisher'
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 200)
 
@@ -384,7 +406,7 @@ class PublisherListTest(TestSetUP):
             data = {
                 'name': 'publisher'
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -420,7 +442,7 @@ class PublisherDetailTest(TestSetUP):
             data = {
                 'name': "pub1"
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 200)
 
@@ -431,7 +453,7 @@ class PublisherDetailTest(TestSetUP):
             data = {
                 'name': "pub1"
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -449,7 +471,7 @@ class PublisherDetailTest(TestSetUP):
         url = reverse(self.view, kwargs = {'pk': 1})
         res = self.client.delete(
             url,
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 200)
 
@@ -457,7 +479,7 @@ class PublisherDetailTest(TestSetUP):
         url = reverse(self.view, kwargs = {'pk': 1})
         res = self.client.put(
             url,
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -497,7 +519,7 @@ class GenreListTest(TestSetUP):
             data = {
                 'name': 'test_genre'
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 200)
 
@@ -509,7 +531,7 @@ class GenreListTest(TestSetUP):
             data = {
                 'name': 'test_genre'
             },
-            **self.basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('test_username', 'test_password')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -545,7 +567,7 @@ class GenreDetailTest(TestSetUP):
               data = {
                   'name': "genre1"
               },
-              **self.basic_auth_header('test_username', 'test_password')
+              **basic_auth_header('test_username', 'test_password')
           )
           self.assertEqual(res.status_code, 200)
 
@@ -556,7 +578,7 @@ class GenreDetailTest(TestSetUP):
               data = {
                   'name': "genre1"
               },
-              **self.basic_auth_header('test_username', 'test_password')
+              **basic_auth_header('test_username', 'test_password')
           )
           self.assertEqual(res.status_code, 401)
 
@@ -574,7 +596,7 @@ class GenreDetailTest(TestSetUP):
           url = reverse(self.view, kwargs = {'pk': 1})
           res = self.client.delete(
               url,
-              **self.basic_auth_header('test_username', 'test_password')
+              **basic_auth_header('test_username', 'test_password')
           )
           self.assertEqual(res.status_code, 200)
 
@@ -582,7 +604,7 @@ class GenreDetailTest(TestSetUP):
           url = reverse(self.view, kwargs = {'pk': 1})
           res = self.client.put(
               url,
-              **self.basic_auth_header('test_username', 'test_password')
+              **basic_auth_header('test_username', 'test_password')
           )
           self.assertEqual(res.status_code, 401)
 
@@ -634,7 +656,7 @@ class UserDetailTest(TestSetUP):
               data = {
                   'password': 'newpassword'
               },
-              **self.basic_auth_header('test_username', 'test_password')
+              **basic_auth_header('test_username', 'test_password')
           )
           self.assertEqual(res.status_code, 200)
 
@@ -645,7 +667,7 @@ class UserDetailTest(TestSetUP):
               data = {
                   'password': 'newpassword'
               },
-              **self.basic_auth_header('test_username', 'test_password')
+              **basic_auth_header('test_username', 'test_password')
           )
           self.assertEqual(res.status_code, 401)
 
@@ -663,7 +685,7 @@ class UserDetailTest(TestSetUP):
           url = reverse(self.view, kwargs = {'pk': 1})
           res = self.client.delete(
               url,
-              **self.basic_auth_header('test_username', 'test_password')
+              **basic_auth_header('test_username', 'test_password')
           )
           self.assertEqual(res.status_code, 200)
 
@@ -671,7 +693,7 @@ class UserDetailTest(TestSetUP):
           url = reverse(self.view, kwargs = {'pk': 1})
           res = self.client.put(
               url,
-              **self.basic_auth_header('test_username', 'test_password')
+              **basic_auth_header('test_username', 'test_password')
           )
           self.assertEqual(res.status_code, 401)
 
@@ -747,3 +769,4 @@ class RegisterTest(TestSetUP):
             }
         )
         self.assertEqual(res.status_code, 200)
+"""
