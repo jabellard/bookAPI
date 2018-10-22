@@ -43,7 +43,7 @@ class TestSetUP(TestCase):
 
         # create admin users
         for i in range(5):
-            user = User.objects.create(username='auser' + str(i))
+            user = User.objects.create(username='auser' + str(i), is_superuser=True)
             user.set_password('1234ab12')
             user.save()
 
@@ -105,6 +105,7 @@ class TestSetUP(TestCase):
             book.authors.set([author, ])
             book.save()
 
+
 class BookListTest(TestSetUP):
     view = 'book_list'
 
@@ -118,35 +119,13 @@ class BookListTest(TestSetUP):
 
         res = self.client.post(
             url,
-            data={
-                'title': 'uploaded book',
-                'description': 'uploaded book description'
+            data = {
+                'title': 'book title'
             },
-            **basic_auth_header('ruser1', '1234ab12')
+            content_type='application/json',
+            **basic_auth_header('auser1', '1234ab12')
         )
         self.assertEqual(res.status_code, 201)
-
-"""
-class BookListTest(TestSetUP):
-    view = 'book_list'
-
-    def test_get_books(self):
-        url = reverse(self.view)
-        res = self.client.get(url)
-        self.assertEqual(res.status_code, 200)
-
-    def test_post_book(self):
-        url = reverse(self.view)
-
-        res = self.client.post(
-            url,
-            data={
-                'title': 'uploaded book',
-                'description': 'uploaded book description'
-            },
-            **basic_auth_header('test_username', 'test_password')
-        )
-        self.assertEqual(res.status_code, 200)
 
     def test_post_book_bad_auth(self):
         url = reverse(self.view)
@@ -157,7 +136,8 @@ class BookListTest(TestSetUP):
                 'title': 'uploaded book',
                 'description': 'uploaded book description'
             },
-            **basic_auth_header('test_username', 'test_password')
+            content_type='application/json',
+            **basic_auth_header('ruser1', '1234zzab12')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -169,7 +149,8 @@ class BookListTest(TestSetUP):
             data={
                 'title': 'uploaded book',
                 'description': 'uploaded book description'
-            }
+            },
+            content_type='application/json'
         )
         self.assertEqual(res.status_code, 401)
 
@@ -195,7 +176,8 @@ class BookDetailTest(TestSetUP):
                 'title': 'new title',
                 'description': 'new description'
             },
-            **basic_auth_header('test_username', 'test_password')
+            content_type='application/json',
+            **basic_auth_header('auser1', '1234ab12')
         )
         self.assertEqual(res.status_code, 200)
 
@@ -207,7 +189,8 @@ class BookDetailTest(TestSetUP):
                 'title': 'new title',
                 'description': 'new description'
             },
-            **basic_auth_header('test_username', 'test_password')
+            content_type='application/json',
+            **basic_auth_header('ruser1', '1234zzab12')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -218,7 +201,8 @@ class BookDetailTest(TestSetUP):
             data={
                 'title': 'new title',
                 'description': 'new description'
-            }
+            },
+            content_type='application/json'
         )
         self.assertEqual(res.status_code, 401)
 
@@ -226,15 +210,15 @@ class BookDetailTest(TestSetUP):
         url = reverse(self.view, kwargs={'pk': 1})
         res = self.client.delete(
             url,
-            **basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('auser1', '1234ab12')
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 204)
 
     def test_delete_book_bad_auth(self):
         url = reverse(self.view, kwargs={'pk': 1})
         res = self.client.put(
             url,
-            **basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('ruser1', '1234zzab12')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -263,9 +247,10 @@ class AuthorListTest(TestSetUP):
                 'first_name': 'first',
                 'last_name': 'last'
             },
-            **basic_auth_header('test_username', 'test_password')
+            content_type='application/json',
+            **basic_auth_header('auser1', '1234ab12')
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 201)
 
     def test_post_author_bad_auth(self):
         url = reverse(self.view)
@@ -276,11 +261,12 @@ class AuthorListTest(TestSetUP):
                 'first_name': 'first',
                 'last_name': 'last'
             },
-            **basic_auth_header('test_username', 'test_password')
+            content_type='application/json',
+            **basic_auth_header('ruser1', '1234zzab12')
         )
         self.assertEqual(res.status_code, 401)
 
-    def test_post_book_no_auth(self):
+    def test_post_author_no_auth(self):
         url = reverse(self.view)
 
         res = self.client.post(
@@ -288,7 +274,8 @@ class AuthorListTest(TestSetUP):
             data={
                 'first_name': 'first',
                 'last_name': 'last'
-            }
+            },
+            content_type='application/json'
         )
         self.assertEqual(res.status_code, 401)
 
@@ -314,7 +301,8 @@ class AuthorDetailTest(TestSetUP):
                 'first_name': 'new first name',
                 'last_name': 'new last name'
             },
-            **basic_auth_header('test_username', 'test_password')
+            content_type='application/json',
+            **basic_auth_header('auser1', '1234ab12')
         )
         self.assertEqual(res.status_code, 200)
 
@@ -326,7 +314,8 @@ class AuthorDetailTest(TestSetUP):
                 'first_name': 'new first name',
                 'last_name': 'new last name'
             },
-            **basic_auth_header('test_username', 'test_password')
+            content_type='application/json',
+            **basic_auth_header('ruser1', '1234azzb12')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -337,7 +326,8 @@ class AuthorDetailTest(TestSetUP):
             data={
                 'first_name': 'new first name',
                 'last_name': 'new last name'
-            }
+            },
+            content_type='application/json'
         )
         self.assertEqual(res.status_code, 401)
 
@@ -345,15 +335,15 @@ class AuthorDetailTest(TestSetUP):
         url = reverse(self.view, kwargs={'pk': 1})
         res = self.client.delete(
             url,
-            **basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('auser1', '1234ab12')
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 204)
 
     def test_delete_author_bad_auth(self):
         url = reverse(self.view, kwargs={'pk': 1})
         res = self.client.put(
             url,
-            **basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('ruser1', '1234azzb12')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -373,7 +363,7 @@ class AuthorBookListTest(TestSetUP):
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
 
-     def test_get_nonexistent_author_books(self):
+    def test_get_nonexistent_author_books(self):
          url=reverse(self.view, kwargs = {'pk': 88888})
          res=self.client.get(url)
          self.assertEqual(res.status_code, 404)
@@ -394,9 +384,10 @@ class PublisherListTest(TestSetUP):
             data = {
                 'name': 'publisher'
             },
-            **basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('auser1', '1234ab12'),
+            content_type='application/json'
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 201)
 
     def test_post_publisher_bad_auth(self):
         url = reverse(self.view)
@@ -406,7 +397,8 @@ class PublisherListTest(TestSetUP):
             data = {
                 'name': 'publisher'
             },
-            **basic_auth_header('test_username', 'test_password')
+            content_type='application/json',
+            **basic_auth_header('ruser1', '12zz34ab12')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -418,7 +410,8 @@ class PublisherListTest(TestSetUP):
             url,
             data = {
                 'name': 'publisher'
-            }
+            },
+            content_type='application/json'
         )
         self.assertEqual(res.status_code, 401)
 
@@ -442,7 +435,8 @@ class PublisherDetailTest(TestSetUP):
             data = {
                 'name': "pub1"
             },
-            **basic_auth_header('test_username', 'test_password')
+            content_type='application/json',
+            **basic_auth_header('auser1', '1234ab12')
         )
         self.assertEqual(res.status_code, 200)
 
@@ -453,7 +447,8 @@ class PublisherDetailTest(TestSetUP):
             data = {
                 'name': "pub1"
             },
-            **basic_auth_header('test_username', 'test_password')
+            content_type='application/json',
+            **basic_auth_header('ruser1', '1234zzab12')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -463,7 +458,8 @@ class PublisherDetailTest(TestSetUP):
             url,
             data = {
                 'name': "pub1"
-            }
+            },
+            content_type='application/json'
         )
         self.assertEqual(res.status_code, 401)
 
@@ -471,15 +467,15 @@ class PublisherDetailTest(TestSetUP):
         url = reverse(self.view, kwargs = {'pk': 1})
         res = self.client.delete(
             url,
-            **basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('auser1', '1234ab12')
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 204)
 
     def test_delete_publisher_bad_auth(self):
         url = reverse(self.view, kwargs = {'pk': 1})
         res = self.client.put(
             url,
-            **basic_auth_header('test_username', 'test_password')
+            **basic_auth_header('ruser1', '1234zzab12')
         )
         self.assertEqual(res.status_code, 401)
 
@@ -498,7 +494,7 @@ class PublisherBookListTest(TestSetUP):
           res=self.client.get(url)
           self.assertEqual(res.status_code, 200)
 
-      def test_get_nonexistent_publisher_books(self):
+    def test_get_nonexistent_publisher_books(self):
           url=reverse(self.view, kwargs = {'pk': 88888})
           res=self.client.get(url)
           self.assertEqual(res.status_code, 404)
@@ -519,9 +515,10 @@ class GenreListTest(TestSetUP):
             data = {
                 'name': 'test_genre'
             },
-            **basic_auth_header('test_username', 'test_password')
+            content_type='application/json',
+            **basic_auth_header('auser1', '1234ab12')
         )
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 201)
 
     def test_post_genre_bad_auth(self):
         url = reverse(self.view)
@@ -531,19 +528,21 @@ class GenreListTest(TestSetUP):
             data = {
                 'name': 'test_genre'
             },
-            **basic_auth_header('test_username', 'test_password')
+            content_type='application/json',
+            **basic_auth_header('ruser1', '1234zzab12')
         )
         self.assertEqual(res.status_code, 401)
 
 
-    def test_post_book_no_auth(self):
+    def test_post_genre_no_auth(self):
         url = reverse(self.view)
 
         res = self.client.post(
             url,
             data = {
                 'name': 'test_genre'
-            }
+            },
+            content_type='application/json'
         )
         self.assertEqual(res.status_code, 401)
 
@@ -555,65 +554,68 @@ class GenreDetailTest(TestSetUP):
           res = self.client.get(url)
           self.assertEqual(res.status_code, 200)
 
-      def test_get_nonexistent_genre(self):
-          url = reverse(self.view, kwargs = {'pk': 88888})
-          res = self.client.get(url)
-          self.assertEqual(res.status_code, 404)
+    def test_get_nonexistent_genre(self):
+        url = reverse(self.view, kwargs = {'pk': 88888})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 404)
 
-      def test_put_genre(self):
-          url = reverse(self.view, kwargs = {'pk': 1})
-          res = self.client.put(
-              url,
-              data = {
-                  'name': "genre1"
-              },
-              **basic_auth_header('test_username', 'test_password')
-          )
-          self.assertEqual(res.status_code, 200)
+    def test_put_genre(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            data = {
+                'name': "genre1"
+            },
+            content_type='application/json',
+            **basic_auth_header('auser1', '1234ab12')
+        )
+        self.assertEqual(res.status_code, 200)
 
-      def test_put_genre_bad_auth(self):
-          url = reverse(self.view, kwargs = {'pk': 1})
-          res = self.client.put(
-              url,
-              data = {
-                  'name': "genre1"
-              },
-              **basic_auth_header('test_username', 'test_password')
-          )
-          self.assertEqual(res.status_code, 401)
+    def test_put_genre_bad_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            data = {
+                'name': "genre1"
+            },
+            content_type='application/json',
+            **basic_auth_header('ruser1', '1234azzb12')
+        )
+        self.assertEqual(res.status_code, 401)
 
-      def test_put_genre_no_auth(self):
-          url = reverse(self.view, kwargs = {'pk': 1})
-          res = self.client.put(
-              url,
-              data = {
-                  'name': "genre1"
-              }
-          )
-          self.assertEqual(res.status_code, 401)
+    def test_put_genre_no_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            data = {
+                'name': "genre1"
+            },
+            content_type='application/json'
+        )
+        self.assertEqual(res.status_code, 401)
 
-      def test_delete_genre(self):
-          url = reverse(self.view, kwargs = {'pk': 1})
-          res = self.client.delete(
-              url,
-              **basic_auth_header('test_username', 'test_password')
-          )
-          self.assertEqual(res.status_code, 200)
+    def test_delete_genre(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.delete(
+            url,
+            **basic_auth_header('auser1', '1234ab12')
+        )
+        self.assertEqual(res.status_code, 204)
 
-      def test_delete_genre_bad_auth(self):
-          url = reverse(self.view, kwargs = {'pk': 1})
-          res = self.client.put(
-              url,
-              **basic_auth_header('test_username', 'test_password')
-          )
-          self.assertEqual(res.status_code, 401)
+    def test_delete_genre_bad_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            **basic_auth_header('ruser1', '1234azzb12')
+        )
+        self.assertEqual(res.status_code, 401)
 
-      def test_delete_genre_no_auth(self):
-          url = reverse(self.view, kwargs = {'pk': 1})
-          res = self.client.put(
-              url
-          )
-          self.assertEqual(res.status_code, 401)
+    def test_delete_genre_no_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url
+        )
+        self.assertEqual(res.status_code, 401)
 
 class GenreBookListTest(TestSetUP):
     view = 'genre_book_list'
@@ -623,7 +625,7 @@ class GenreBookListTest(TestSetUP):
           res=self.client.get(url)
           self.assertEqual(res.status_code, 200)
 
-      def test_get_nonexistent_genre_books(self):
+    def test_get_nonexistent_genre_books(self):
           url=reverse(self.view, kwargs = {'pk': 88888})
           res=self.client.get(url)
           self.assertEqual(res.status_code, 404)
@@ -644,65 +646,68 @@ class UserDetailTest(TestSetUP):
           res = self.client.get(url)
           self.assertEqual(res.status_code, 200)
 
-      def test_get_nonexistent_user(self):
-          url = reverse(self.view, kwargs = {'pk': 88888})
-          res = self.client.get(url)
-          self.assertEqual(res.status_code, 404)
+    def test_get_nonexistent_user(self):
+        url = reverse(self.view, kwargs = {'pk': 88888})
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, 404)
 
-      def test_put_user(self):
-          url = reverse(self.view, kwargs = {'pk': 1})
-          res = self.client.put(
-              url,
-              data = {
-                  'password': 'newpassword'
-              },
-              **basic_auth_header('test_username', 'test_password')
-          )
-          self.assertEqual(res.status_code, 200)
+    def test_put_user(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            data = {
+                'password': 'newpassword'
+            },
+            content_type='application/json',
+            **basic_auth_header('auser1', '1234ab12')
+        )
+        self.assertEqual(res.status_code, 200)
 
-      def test_put_user_bad_auth(self):
-          url = reverse(self.view, kwargs = {'pk': 1})
-          res = self.client.put(
-              url,
-              data = {
-                  'password': 'newpassword'
-              },
-              **basic_auth_header('test_username', 'test_password')
-          )
-          self.assertEqual(res.status_code, 401)
+    def test_put_user_bad_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            data = {
+                'password': 'newpassword'
+            },
+            content_type='application/json',
+            **basic_auth_header('ruser1', '1234azzb12')
+        )
+        self.assertEqual(res.status_code, 401)
 
-      def test_put_user_no_auth(self):
-          url = reverse(self.view, kwargs = {'pk': 1})
-          res = self.client.put(
-              url,
-              data = {
-                  'password': 'newpassword'
-              }
-          )
-          self.assertEqual(res.status_code, 401)
+    def test_put_user_no_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            data = {
+                'password': 'newpassword'
+            },
+            content_type='application/json'
+        )
+        self.assertEqual(res.status_code, 401)
 
-      def test_delete_user(self):
-          url = reverse(self.view, kwargs = {'pk': 1})
-          res = self.client.delete(
-              url,
-              **basic_auth_header('test_username', 'test_password')
-          )
-          self.assertEqual(res.status_code, 200)
+    def test_delete_user(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.delete(
+            url,
+            **basic_auth_header('auser1', '1234ab12')
+        )
+        self.assertEqual(res.status_code, 204)
 
-      def test_delete_user_bad_auth(self):
-          url = reverse(self.view, kwargs = {'pk': 1})
-          res = self.client.put(
-              url,
-              **basic_auth_header('test_username', 'test_password')
-          )
-          self.assertEqual(res.status_code, 401)
+    def test_delete_user_bad_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url,
+            **basic_auth_header('ruser1', '1234zzab12')
+        )
+        self.assertEqual(res.status_code, 401)
 
-      def test_delete_user_no_auth(self):
-          url = reverse(self.view, kwargs = {'pk': 1})
-          res = self.client.put(
-              url
-          )
-          self.assertEqual(res.status_code, 401)
+    def test_delete_user_no_auth(self):
+        url = reverse(self.view, kwargs = {'pk': 1})
+        res = self.client.put(
+            url
+        )
+        self.assertEqual(res.status_code, 401)
 
 class UserBookListTest(TestSetUP):
     view = 'user_book_list'
@@ -712,7 +717,7 @@ class UserBookListTest(TestSetUP):
           res=self.client.get(url)
           self.assertEqual(res.status_code, 200)
 
-      def test_get_nonexistent_user_books(self):
+    def test_get_nonexistent_user_books(self):
           url=reverse(self.view, kwargs = {'pk': 88888})
           res=self.client.get(url)
           self.assertEqual(res.status_code, 404)
@@ -725,7 +730,7 @@ class UserPublisherListTest(TestSetUP):
           res=self.client.get(url)
           self.assertEqual(res.status_code, 200)
 
-      def test_get_nonexistent_user_publishers(self):
+    def test_get_nonexistent_user_publishers(self):
           url=reverse(self.view, kwargs = {'pk': 88888})
           res=self.client.get(url)
           self.assertEqual(res.status_code, 404)
@@ -738,7 +743,7 @@ class UserAuthorListTest(TestSetUP):
           res=self.client.get(url)
           self.assertEqual(res.status_code, 200)
 
-      def test_get_nonexistent_user_authors(self):
+    def test_get_nonexistent_user_authors(self):
           url=reverse(self.view, kwargs = {'pk': 88888})
           res=self.client.get(url)
           self.assertEqual(res.status_code, 404)
@@ -748,10 +753,10 @@ class UserGenreListTest(TestSetUP):
 
     def test_get_user_genres(self):
         url = reverse(self.view, kwargs = {'pk': 1})
-          res=self.client.get(url)
-          self.assertEqual(res.status_code, 200)
+        res=self.client.get(url)
+        self.assertEqual(res.status_code, 200)
 
-      def test_get_nonexistent_user_genres(self):
+    def test_get_nonexistent_user_genres(self):
           url=reverse(self.view, kwargs = {'pk': 88888})
           res=self.client.get(url)
           self.assertEqual(res.status_code, 404)
@@ -766,7 +771,7 @@ class RegisterTest(TestSetUP):
             data = {
                 'username': 'test_usernamehghjjhjh',
                 'password': 'lasthjhhh'
-            }
+            },
+            content_type='application/json'
         )
-        self.assertEqual(res.status_code, 200)
-"""
+        self.assertEqual(res.status_code, 201)

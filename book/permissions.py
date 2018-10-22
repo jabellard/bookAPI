@@ -8,7 +8,7 @@ class IsAdminOrObjectOwner(permissions.BasePermission):
         if request.method in SAFE_METHODS:
             return True
         else:
-            if obj.owner:
+            if hasattr(obj, 'owner'):
                 return (request.user.is_superuser or
                         (request.user == obj.owner))
             else:

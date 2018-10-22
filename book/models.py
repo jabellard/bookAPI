@@ -30,7 +30,7 @@ class Publisher(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(max_length=30)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     owner = models.ForeignKey(User, related_name='genres', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
@@ -43,7 +43,7 @@ class Genre(models.Model):
 class Book(models.Model):
     title = models.CharField(max_length=30)
     description = models.TextField(null=True, blank=True)
-    authors = models.ManyToManyField(Author, related_name='books', null=True, blank=True)
+    authors = models.ManyToManyField(Author, related_name='books', blank=True)
     genre = models.ForeignKey(Genre, related_name='books', null=True,
                               blank=True, on_delete=models.SET_NULL)
     publisher = models.ForeignKey(Publisher, related_name='books',

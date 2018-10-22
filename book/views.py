@@ -48,6 +48,9 @@ class BookDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
 
+    def put(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
 
 class AuthorList(generics.ListCreateAPIView):
     """
@@ -76,6 +79,9 @@ class AuthorDetail(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
+
+    def put(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
 
 
 class AuthorBookList(generics.RetrieveAPIView):
@@ -114,6 +120,9 @@ class PublisherDetail(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Publisher.objects.all()
     serializer_class = PublisherSerializer
+
+    def put(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
 
 
 class PublisherBookList(generics.RetrieveAPIView):
@@ -154,6 +163,9 @@ class GenreDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
 
+    def put(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
+
 
 class GenreBookList(generics.RetrieveAPIView):
     """
@@ -193,6 +205,9 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     #permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def put(self, request, *args, **kwargs):
+        return self.partial_update(request, *args, **kwargs)
 
 
 class UserBookList(generics.RetrieveAPIView):
